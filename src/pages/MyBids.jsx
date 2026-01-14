@@ -101,8 +101,9 @@ export const MyBids = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {bid.gig?.title || 'Gig Title Unavailable'}
-                      </h3>
+  Gig ID: {bid.gigId}
+</h3>
+
                       <p className="text-sm text-gray-600 line-clamp-2 mb-2">
                         {bid.message}
                       </p>
