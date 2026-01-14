@@ -27,7 +27,7 @@ export const gigAPI = {
   },
 
   getMyGigs: async (params = {}) => {
-    const response = await axios.get('/gigs/my-gigs', { params });
+    const response = await axios.get('/api/gigs/my-gigs', { params });
     return response.data;
   },
 
