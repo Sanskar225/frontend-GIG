@@ -21,7 +21,7 @@ export const bidAPI = {
     throw new Error('Bid ID is required for hiring');
   }
 
-  const response = await axios.patch(`/bids/${bidId}/hire`);
+  const response = await axios.patch(`/api/bids/${bidId}/hire`);
   return response.data;
 },
 
