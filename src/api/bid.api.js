@@ -12,7 +12,7 @@ export const bidAPI = {
   },
 
   getMyBids: async () => {
-    const response = await axios.get('/bids/my/bids');
+    const response = await axios.get('/api/bids/my/bids');
     return response.data;
   },
 
