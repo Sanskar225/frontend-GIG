@@ -2,27 +2,27 @@ import axios from './axios';
 
 export const gigAPI = {
   getAllGigs: async (params = {}) => {
-    const response = await axios.get('/gigs', { params });
+    const response = await axios.get('/api/gigs', { params });
     return response.data;
   },
 
   getGigById: async (id) => {
-    const response = await axios.get(`/gigs/${id}`);
+    const response = await axios.get(`/api/gigs/${id}`);
     return response.data;
   },
 
   createGig: async (gigData) => {
-    const response = await axios.post('/gigs', gigData);
+    const response = await axios.post('/api/gigs', gigData);
     return response.data;
   },
 
   updateGig: async (id, gigData) => {
-    const response = await axios.patch(`/gigs/${id}`, gigData);
+    const response = await axios.patch(`/api/gigs/${id}`, gigData);
     return response.data;
   },
 
   deleteGig: async (id) => {
-    const response = await axios.delete(`/gigs/${id}`);
+    const response = await axios.delete(`/api/gigs/${id}`);
     return response.data;
   },
 
@@ -32,7 +32,7 @@ export const gigAPI = {
   },
 
   searchGigs: async (query) => {
-    const response = await axios.get('/gigs', {
+    const response = await axios.get('/api/gigs', {
       params: { query, status: 'open' }
     });
     return response.data;
