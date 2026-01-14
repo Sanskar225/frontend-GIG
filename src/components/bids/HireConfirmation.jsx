@@ -222,7 +222,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
             </Button>
             <Button
               variant="success"
-              onClick={() => onConfirm(bid._id)}
+              onClick={() => onConfirm(bid.id)}
               loading={loading}
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 px-8 py-2.5 rounded-xl border-0"
             >
