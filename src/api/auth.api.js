@@ -2,27 +2,27 @@ import axios from './axios';
 
 export const authAPI = {
   register: async (userData) => {
-    const response = await axios.post('/auth/register', userData);
+    const response = await axios.post('/api/auth/register', userData);
     return response.data;
   },
 
   login: async (credentials) => {
-    const response = await axios.post('/auth/login', credentials);
+    const response = await axios.post('/api/auth/login', credentials);
     return response.data;
   },
 
   logout: async () => {
-    const response = await axios.post('/auth/logout');
+    const response = await axios.post('/api/auth/logout');
     return response.data;
   },
 
   getCurrentUser: async () => {
-    const response = await axios.get('/auth/me');
+    const response = await axios.get('/api/auth/me');
     return response.data;
   },
 
   updateProfile: async (userData) => {
-    const response = await axios.patch('/auth/profile', userData);
+    const response = await axios.patch('/api/auth/profile', userData);
     return response.data;
   },
 };
