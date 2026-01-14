@@ -8,17 +8,32 @@ class SocketService {
   }
 
   connect(userId) {
+    // Prevent duplicate connections
     if (this.socket?.connected) {
       return;
     }
 
+    // 🔑 Get token from localStorage
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.warn('⚠️ Socket not connected: No token found');
+      return;
+    }
+
     this.socket = io(SOCKET_URL, {
-      withCredentials: true,
       transports: ['websocket', 'polling'],
+      withCredentials: true,
+
+      // ✅ SEND TOKEN HERE (MOST IMPORTANT PART)
+      auth: {
+        token: token,
+      },
     });
 
     this.socket.on('connect', () => {
       console.log('✅ Socket connected:', this.socket.id);
+
       if (userId) {
         this.socket.emit('join', { userId });
       }
@@ -29,7 +44,7 @@ class SocketService {
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error);
+      console.error('❌ Socket connection error:', error.message);
     });
   }
 
