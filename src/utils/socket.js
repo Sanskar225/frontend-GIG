@@ -32,7 +32,7 @@ class SocketService {
     });
 
     this.socket.on('connect', () => {
-      console.log('✅ Socket connected:', this.socket.id);
+      //console.log('✅ Socket connected:', this.socket.id);
 
       if (userId) {
         this.socket.emit('join', { userId });
@@ -40,11 +40,11 @@ class SocketService {
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('❌ Socket disconnected:', reason);
+      //console.log('❌ Socket disconnected:', reason);
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error.message);
+      //console.error('❌ Socket connection error:', error.message);
     });
   }
 
