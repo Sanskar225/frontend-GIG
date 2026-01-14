@@ -108,7 +108,7 @@ npm install
 
 Create a `.env` file in the root directory:
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5000
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
