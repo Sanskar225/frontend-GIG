@@ -7,7 +7,7 @@ import { formatCurrency } from '../../utils/validators';
 export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) => {
   if (!bid) return null;
 
-  const freelancerRating = bid.freelancer?.rating || 4.8;
+  const freelancerRating = bid.freelancerId?.rating || 4.8;
   const projectsCompleted = bid.freelancer?.projectsCompleted || 42;
   const responseRate = bid.freelancer?.responseRate || 96;
 
@@ -98,13 +98,13 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h4 className="text-xl font-bold text-gray-900">{bid.freelancer?.name}</h4>
+                  <h4 className="text-xl font-bold text-gray-900">{bid.freelancerId?.username}</h4>
                   <div className={`text-sm font-bold bg-gradient-to-r ${getRatingColor(freelancerRating)} text-white px-2 py-0.5 rounded-full flex items-center gap-1`}>
                     <Award size={10} />
                     {freelancerRating.toFixed(1)}
                   </div>
                 </div>
-                <p className="text-gray-600 mb-3">{bid.freelancer?.email}</p>
+                <p className="text-gray-600 mb-3">{bid.freelancerId?.email}</p>
                 
                 {/* Stats */}
                 <div className="flex flex-wrap gap-4">
@@ -222,7 +222,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
             </Button>
             <Button
               variant="success"
-              onClick={() => onConfirm(bid.id)}
+              onClick={() => onConfirm(bid._id)}
               loading={loading}
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 px-8 py-2.5 rounded-xl border-0"
             >
