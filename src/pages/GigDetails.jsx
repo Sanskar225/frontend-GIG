@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGigById, deleteGig } from '../store/slices/gigSlice';
 import { fetchBidsForGig, submitBid, hireBid } from '../store/slices/bidSlice';
-import { GigDetails } from '../components/gigs/GigDetails'; // This is the component
+import { GigDetails } from '../components/gigs/GigDetails';
 import { BidCard } from '../components/bids/BidCard';
 import { BidForm } from '../components/bids/BidForm';
 import { HireConfirmation } from '../components/bids/HireConfirmation';
@@ -14,7 +14,7 @@ import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { ArrowLeft, Edit, Trash2, Plus, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export const GigDetailPage = () => { // CHANGED: from GigDetailPage to GigDetails
+export const GigDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export const GigDetailPage = () => { // CHANGED: from GigDetailPage to GigDetail
 
   const isOwner = currentGig?.client?._id === user?._id;
   const currentBids = gigBids[id] || [];
-  const hasUserBid = currentBids.some((bid) => bid.freelancer?._id === user?._id);
+  const hasUserBid = currentBids.some((bid) => bid.freelancerId?._id === user?._id || bid.freelancer?._id === user?._id);
 
   useEffect(() => {
     dispatch(fetchGigById(id));
@@ -55,6 +55,9 @@ export const GigDetailPage = () => { // CHANGED: from GigDetailPage to GigDetail
   };
 
   const handleHireClick = (bid) => {
+    console.log('🎯 Hire button clicked, bid data:', bid);
+    console.log('💰 Bid price:', bid.price);
+    console.log('👤 Freelancer data:', bid.freelancerId);
     setSelectedBid(bid);
     setShowHireConfirm(true);
   };
@@ -164,7 +167,7 @@ export const GigDetailPage = () => { // CHANGED: from GigDetailPage to GigDetail
                           key={bid._id}
                           bid={bid}
                           isOwner={isOwner}
-                          onHire={handleHireClick}
+                          onHire={() => handleHireClick(bid)}
                           loading={hiringBid}
                         />
                       ))}
