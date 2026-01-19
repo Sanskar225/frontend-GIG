@@ -1,15 +1,80 @@
 import React from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
-import { AlertTriangle, User, DollarSign, Clock, Shield, CheckCircle, Target, TrendingUp, Award, Zap, Users } from 'lucide-react';
+import { AlertTriangle, User, DollarSign, Clock, Shield, CheckCircle, Target, TrendingUp, Award, Zap, Users, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../../utils/validators';
 
 export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) => {
-  if (!bid) return null;
+  // Debug log to see what data we're getting
+  React.useEffect(() => {
+    if (isOpen && bid) {
+      console.log('HireConfirmation - Bid data:', bid);
+      console.log('HireConfirmation - Bid price:', bid.price);
+      console.log('HireConfirmation - Bid ID:', bid._id);
+    }
+  }, [isOpen, bid]);
 
-  const freelancerRating = bid.freelancerId?.rating || 4.8;
-  const projectsCompleted = bid.freelancer?.projectsCompleted || 42;
-  const responseRate = bid.freelancer?.responseRate || 96;
+  if (!bid) {
+    console.error('HireConfirmation: No bid data provided');
+    return null;
+  }
+
+  // Helper function to safely extract freelancer information
+  const getFreelancerInfo = () => {
+    // Check multiple possible structures
+    if (bid.freelancer && typeof bid.freelancer === 'object') {
+      return {
+        id: bid.freelancer._id,
+        username: bid.freelancer.username || 'Unknown Freelancer',
+        email: bid.freelancer.email || '',
+        rating: bid.freelancer.rating || 4.8,
+        profileImage: bid.freelancer.profileImage,
+        completedGigs: bid.freelancer.completedGigs || 0,
+        responseRate: bid.freelancer.responseRate || 96
+      };
+    }
+    
+    if (bid.freelancerId && typeof bid.freelancerId === 'object') {
+      return {
+        id: bid.freelancerId._id,
+        username: bid.freelancerId.username || 'Unknown Freelancer',
+        email: bid.freelancerId.email || '',
+        rating: bid.freelancerId.rating || 4.8,
+        profileImage: bid.freelancerId.profileImage,
+        completedGigs: bid.freelancerId.completedGigs || 0,
+        responseRate: bid.freelancerId.responseRate || 96
+      };
+    }
+    
+    // Default fallback
+    return {
+      id: '',
+      username: 'Unknown Freelancer',
+      email: '',
+      rating: 4.8,
+      profileImage: null,
+      completedGigs: 42,
+      responseRate: 96
+    };
+  };
+
+  // Safely get bid price
+  const getBidPrice = () => {
+    if (!bid || bid.price === undefined || bid.price === null) {
+      console.error('Bid price is missing:', bid);
+      return 0;
+    }
+    
+    // Handle both string and number
+    const price = parseFloat(bid.price);
+    return isNaN(price) ? 0 : price;
+  };
+
+  const freelancer = getFreelancerInfo();
+  const bidPrice = getBidPrice();
+
+  // Check if we have valid data
+  const isValidBid = bid._id && bidPrice > 0;
 
   const getRatingColor = (rating) => {
     if (rating >= 4.5) return 'from-green-500 to-emerald-500';
@@ -30,6 +95,23 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
       size="lg"
     >
       <div className="space-y-6">
+        {/* Warning if data is incomplete */}
+        {!isValidBid && (
+          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
+            <AlertCircle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-amber-900 mb-1">Data Issue Detected</h4>
+              <p className="text-sm text-amber-800">
+                Some bid information appears to be incomplete. Please verify before proceeding.
+              </p>
+              <div className="mt-2 text-xs text-amber-700">
+                <p>Bid ID: {bid._id || 'Missing'}</p>
+                <p>Bid Price: ${bidPrice}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Trust Banner */}
         <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 border border-cyan-800/30 rounded-2xl p-4">
           <div className="flex items-center justify-between">
@@ -44,7 +126,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
           </div>
         </div>
 
-        {/* Warning Section - Enhanced */}
+        {/* Warning Section */}
         <div className="flex items-start gap-4 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/70 rounded-2xl">
           <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
             <AlertTriangle size={24} className="text-white" />
@@ -88,9 +170,19 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
 
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl flex items-center justify-center border-2 border-cyan-200">
-                  <User size={28} className="text-cyan-700" />
-                </div>
+                {freelancer.profileImage ? (
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-cyan-200">
+                    <img 
+                      src={freelancer.profileImage} 
+                      alt={freelancer.username}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl flex items-center justify-center border-2 border-cyan-200">
+                    <User size={28} className="text-cyan-700" />
+                  </div>
+                )}
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center border-2 border-white">
                   <CheckCircle size={10} className="text-white" />
                 </div>
@@ -98,13 +190,15 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h4 className="text-xl font-bold text-gray-900">{bid.freelancerId?.username}</h4>
-                  <div className={`text-sm font-bold bg-gradient-to-r ${getRatingColor(freelancerRating)} text-white px-2 py-0.5 rounded-full flex items-center gap-1`}>
+                  <h4 className="text-xl font-bold text-gray-900">{freelancer.username}</h4>
+                  <div className={`text-sm font-bold bg-gradient-to-r ${getRatingColor(freelancer.rating)} text-white px-2 py-0.5 rounded-full flex items-center gap-1`}>
                     <Award size={10} />
-                    {freelancerRating.toFixed(1)}
+                    {freelancer.rating.toFixed(1)}
                   </div>
                 </div>
-                <p className="text-gray-600 mb-3">{bid.freelancerId?.email}</p>
+                {freelancer.email && (
+                  <p className="text-gray-600 mb-3">{freelancer.email}</p>
+                )}
                 
                 {/* Stats */}
                 <div className="flex flex-wrap gap-4">
@@ -114,7 +208,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Projects</p>
-                      <p className="font-bold text-gray-900">{projectsCompleted}</p>
+                      <p className="font-bold text-gray-900">{freelancer.completedGigs}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -123,7 +217,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Response Rate</p>
-                      <p className="font-bold text-gray-900">{responseRate}%</p>
+                      <p className="font-bold text-gray-900">{freelancer.responseRate}%</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -156,9 +250,13 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
                 </div>
                 <div className="flex items-center text-3xl font-bold text-gray-900 mb-2">
                   <DollarSign size={28} className="text-cyan-600 mr-2" />
-                  <span>{formatCurrency(bid.price)}</span>
+                  <span>{formatCurrency(bidPrice)}</span>
                 </div>
-                <p className="text-sm text-cyan-700">Secured via escrow protection</p>
+                {bidPrice === 0 ? (
+                  <p className="text-sm text-amber-600">⚠️ Verify price before proceeding</p>
+                ) : (
+                  <p className="text-sm text-cyan-700">Secured via escrow protection</p>
+                )}
               </div>
 
               {/* Timeline Card */}
@@ -176,31 +274,14 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Benefits Section */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/50 rounded-2xl p-5">
-          <h4 className="font-bold text-green-900 mb-4 flex items-center gap-2">
-            <Shield size={18} className="text-green-600" />
-            What's Included
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { icon: Shield, text: 'Escrow Payment Protection', color: 'text-green-600' },
-              { icon: CheckCircle, text: 'Money-Back Guarantee', color: 'text-green-600' },
-              { icon: Users, text: '24/7 Support', color: 'text-green-600' },
-              { icon: Zap, text: 'Fast Response Time', color: 'text-green-600' },
-              { icon: Award, text: 'Quality Assurance', color: 'text-green-600' },
-              { icon: Target, text: 'Project Management', color: 'text-green-600' },
-            ].map((item, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <item.icon size={16} className={item.color} />
-                </div>
-                <span className="text-sm font-medium text-green-900">{item.text}</span>
+            {/* Bid Message Preview */}
+            {bid.message && (
+              <div className="mt-4 p-3 bg-white border border-gray-200 rounded-lg">
+                <h5 className="text-sm font-semibold text-gray-800 mb-2">Proposal Preview:</h5>
+                <p className="text-sm text-gray-600 line-clamp-2">{bid.message}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -218,17 +299,33 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
               disabled={loading}
               className="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-xl font-medium"
             >
-              Review Later
+              Cancel
             </Button>
             <Button
               variant="success"
-              onClick={() => onConfirm(bid._id)}
+              onClick={() => {
+                if (!bid._id) {
+                  console.error('Cannot hire: Bid ID is missing');
+                  toast.error('Cannot proceed: Bid ID is missing');
+                  return;
+                }
+                console.log('Confirming hire for bid ID:', bid._id);
+                console.log('Full bid data:', bid);
+                onConfirm(bid._id);
+              }}
               loading={loading}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 px-8 py-2.5 rounded-xl border-0"
+              disabled={!bid._id || bidPrice === 0}
+              className={`bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 px-8 py-2.5 rounded-xl border-0 ${
+                !bid._id || bidPrice === 0 ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               <div className="flex items-center gap-2">
                 <Award size={18} />
-                <span>Confirm & Hire Professional</span>
+                <span>
+                  {!bid._id ? 'Missing Bid Data' : 
+                   bidPrice === 0 ? 'Check Bid Price' : 
+                   'Confirm & Hire Professional'}
+                </span>
               </div>
             </Button>
           </div>
