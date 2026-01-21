@@ -2,6 +2,7 @@
 
 A modern, full-stack freelance marketplace built with the MERN stack. Connect clients with talented freelancers through an intuitive platform featuring real-time notifications, atomic transactions, and a seamless user experience.
 
+Backend github => https://github.com/Sanskar225/backend-GIG
 ## 🚀 Features
 
 ### Core Features
