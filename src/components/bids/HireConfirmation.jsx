@@ -15,7 +15,7 @@ export const HireConfirmation = ({ isOpen, onClose, bid, onConfirm, loading }) =
   }, [isOpen, bid]);
 
   if (!bid) {
-    console.error('❌ HireConfirmation: No bid data provided');
+   // console.error('❌ HireConfirmation: No bid data provided');
     return null;
   }
 
